@@ -114,3 +114,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.sidebar-logo {
+  display: block;
+  box-sizing: border-box;
+  width: 80%;
+  height: 74px;
+  margin: 5px auto;
+  background: url('../../../assets/logo/boblog.png') 0 center no-repeat;
+  background-size: 82%;
+
+  img {
+    width: 100%;
+  }
+}
+</style>

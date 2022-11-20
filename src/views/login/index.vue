@@ -9,7 +9,7 @@
       label-position="left"
     >
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <img width="180" src="https://cdn.boblog.com/FieFyVleQaVrqewVfPFkYgjlODZK" alt="logo">
       </div>
 
       <el-form-item prop="email">
@@ -54,7 +54,7 @@
         type="primary"
         style="width: 100%; margin-bottom: 30px"
         @click.native.prevent="handleLogin"
-      >Login</el-button>
+      >登录</el-button>
 
     </el-form>
   </div>
@@ -217,7 +217,11 @@ $light_gray: #eee;
 
   .title-container {
     position: relative;
-
+    display: flex;
+    align-items: center;
+    height: 64px;
+    margin-bottom: 32px;
+    justify-content: center;
     .title {
       font-size: 26px;
       color: $light_gray;
