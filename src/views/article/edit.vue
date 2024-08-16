@@ -10,6 +10,9 @@
       <el-form-item label="标题" prop="title">
         <el-input v-model="ruleForm.title" />
       </el-form-item>
+      <el-form-item label="文章路径" prop="article_path">
+        <el-input v-model="ruleForm.article_path" />
+      </el-form-item>
       <el-form-item label="描述" prop="description">
         <el-input v-model="ruleForm.description" />
       </el-form-item>
@@ -22,9 +25,13 @@
       <el-form-item label="图片" prop="img_url">
         <el-upload
           class="avatar-uploader"
-          action="https://upload-z2.qiniup.com/"
+          :limit="1"
+          name="file"
+          :action="uploadUrl"
+          :headers="{
+            ['Authorization']: encodeToken()
+          }"
           :show-file-list="false"
-          :data="{ token }"
           :on-success="handleUploadSuccess"
         >
           <img
@@ -81,19 +88,21 @@
 import { mapState } from 'vuex'
 import { detail, update } from '@/api/article'
 import { list } from '@/api/category'
-import { getToken } from '@/api/upload'
 import axios from 'axios'
+import { encodeToken } from '@/utils/auth'
+import { uploadImage } from '@/api/upload'
 
 export default {
   name: 'CategoryCreate',
   data() {
     return {
-      token: '',
       categoryList: [],
+      uploadUrl: process.env.VUE_APP_BASE_API + '/upload/images',
       ruleForm: {
         id: this.$route.query.id,
         title: '',
         description: '',
+        article_path: '',
         img_url: '',
         seo_keyword: '',
         status: 1,
@@ -106,6 +115,9 @@ export default {
         title: [{ required: true, message: '请输入文章标题', trigger: 'blur' }],
         description: [
           { required: true, message: '请输入文章描述', trigger: 'blur' }
+        ],
+        article_path: [
+          { required: true, message: '请输入文章路径', trigger: 'blur' }
         ],
         img_url: [
           { required: true, message: '请输入图片链接', trigger: 'blur' }
@@ -135,20 +147,11 @@ export default {
     this.initData()
   },
   methods: {
+    encodeToken,
     initData() {
       this.$axios = axios.create({ withCredentials: false })
       this.getArticleDetail()
-      this.getUploadToken()
       this.getCategoryList()
-    },
-    // 获取用户信息
-    async getUploadToken() {
-      try {
-        const res = await getToken()
-        this.token = res.data.token
-      } catch (err) {
-        console.log(err)
-      }
     },
     // 获取文章详情
     async getArticleDetail() {
@@ -158,6 +161,7 @@ export default {
           is_markdown: false
         })
         this.ruleForm.title = res.data.title
+        this.ruleForm.article_path = res.data.article_path
         this.ruleForm.description = res.data.description
         this.ruleForm.img_url = res.data.img_url
         this.ruleForm.content = res.data.content
@@ -173,15 +177,15 @@ export default {
       }
     },
     // 图片上传成功回调
-    handleUploadSuccess(file) {
-      this.ruleForm.img_url = `https://cdn.boblog.com/${file.key}`
+    handleUploadSuccess(res) {
+      this.ruleForm.img_url = res.data.img_url
       this.$message.success('上传成功!')
     },
     $imgDel(pos, $file) {
       console.log(pos, $file)
     },
     // 绑定@imgAdd event
-    $imgAdd(pos, $file) {
+    async $imgAdd(pos, $file) {
       const loading = this.$loading({
         lock: true,
         text: 'Loading',
@@ -192,20 +196,14 @@ export default {
       // 第一步.将图片上传到服务器.
       const formdata = new FormData()
       formdata.append('file', $file)
-      formdata.append('token', this.token)
-      this.$axios({
-        url: 'https://upload-z2.qiniup.com/',
-        method: 'post',
-        data: formdata,
-        headers: { 'Content-Type': 'multipart/form-data' }
-      }).then((res) => {
-        const img_url = `https://cdn.boblog.com/${res.data.key}`
-        this.$refs.md.$img2Url(pos, img_url)
+      try {
+        const res = await uploadImage(formdata)
+        this.$refs.md.$img2Url(pos, res.data.img_url)
         loading.close()
-      }).catch(err => {
-        console.log(err)
+      } catch (e) {
+        console.log(e)
         loading.close()
-      })
+      }
     },
     // 获取分类列表
     async getCategoryList() {

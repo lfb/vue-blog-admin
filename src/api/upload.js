@@ -8,3 +8,11 @@ export function getToken(params) {
     params
   })
 }
+// 获取上传图片
+export function uploadImage(data) {
+  return request({
+    url: '/upload/images',
+    method: 'post',
+    data
+  })
+}
