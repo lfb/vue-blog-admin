@@ -10,6 +10,9 @@
       <el-form-item label="名称" prop="name">
         <el-input v-model="ruleForm.name" />
       </el-form-item>
+      <el-form-item label="分类KEY" prop="category_key">
+        <el-input v-model="ruleForm.category_key" />
+      </el-form-item>
       <el-form-item label="排序" prop="sort_order">
         <el-input v-model="ruleForm.sort_order" />
       </el-form-item>
@@ -40,11 +43,13 @@ export default {
       ruleForm: {
         id: this.$route.query.id,
         name: '',
+        category_key: '',
         sort_order: 1,
         status: 1
       },
       rules: {
         name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
+        category_key: [{ required: true, message: '请输入分类KEY', trigger: 'blur' }],
         sort_order: [
           { required: true, message: '请输入分类排序', trigger: 'blur' }
         ]
@@ -73,6 +78,7 @@ export default {
           id: this.$route.query.id
         })
         this.ruleForm.name = res.data.name
+        this.ruleForm.category_key = res.data.category_key
         this.ruleForm.status = res.data.status
         this.ruleForm.sort_order = res.data.sort_order
       } catch (err) {

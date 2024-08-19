@@ -69,6 +69,11 @@
             {{ scope.row.name }}
           </template>
         </el-table-column>
+        <el-table-column label="分类KEY" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.category_key }}
+          </template>
+        </el-table-column>
         <el-table-column label="排序" align="center">
           <template slot-scope="scope">
             {{ scope.row.sort_order }}
