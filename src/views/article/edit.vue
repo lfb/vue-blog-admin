@@ -158,7 +158,7 @@ export default {
       try {
         const res = await detail({
           id: this.$route.query.id,
-          is_markdown: false
+          is_markdown: 1
         })
         this.ruleForm.title = res.data.title
         this.ruleForm.article_path = res.data.article_path
